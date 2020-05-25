@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Sockets</h1>
+<textarea id="message"></textarea> <br>
+onoma :<input type="text" id="name"/> <br>
+<button onclick="sendMessage()">Send</button>
+<ul id="messages"  ></ul>
+
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io.connect('http://localhost:3000');
+    socket.on('connect' , () => {
+        console.log('connected with server id: ' + socket.id);
+    });
+    socket.on('news', (data) => {
+        console.log(data);
+    });
+
+    const msg = document.getElementById('message');
+    const ul = document.getElementById('messages');
+    const name = document.getElementById('name');
+    function sendMessage() {
+        if (!msg.value) return;
+
+
+       socket.emit('new-message', {
+           message: msg.value,
+           name: name.value
+       });
+
+       socket.on('server-message', (data) => {
+           ul.innerHTML += '
+                    <li>
+                    ${ data.name } <br>
+                    ${ data.message}
+
+                    </li> ';
+       });
+        msg.value = '';
+    }
+</script>
+</body>
+</html>
